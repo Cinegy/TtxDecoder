@@ -16,7 +16,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace TtxDecoder.Teletext
+namespace Cinegy.TtxDecoder.Teletext
 {
     public class TeleTextSubtitleEventArgs : EventArgs
     {

@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Cinegy.TsDecoder.TransportStream;
 
-namespace TtxDecoder.Teletext
+namespace Cinegy.TtxDecoder.Teletext
 {
     public class TeleTextDecoder
     {
@@ -50,7 +50,7 @@ namespace TtxDecoder.Teletext
         {
         }
 
-        private void Setup(TsDecoder tsDecoder)
+        private void Setup(TsDecoder.TransportStream.TsDecoder tsDecoder)
         {
             if (tsDecoder == null || _currentTeletextDescriptor != null) return;
 
@@ -102,7 +102,7 @@ namespace TtxDecoder.Teletext
             }
         }
 
-        public void AddPacket(TsDecoder tsDecoder, TsPacket tsPacket)
+        public void AddPacket(TsDecoder.TransportStream.TsDecoder tsDecoder, TsPacket tsPacket)
         {
             if (_currentTeletextDescriptor == null)
             {

@@ -13,7 +13,7 @@
   limitations under the License.
 */
 
-namespace TtxDecoder.Teletext
+namespace Cinegy.TtxDecoder.Teletext
 {
     public static class Utils
     {
