@@ -15,7 +15,7 @@
 
 using System;
 using System.Collections.Generic;
-using TsDecoder.TransportStream;
+using Cinegy.TsDecoder.TransportStream;
 
 namespace TtxDecoder.Teletext
 {

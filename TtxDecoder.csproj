@@ -30,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Cinegy.TsDecoder, Version=1.0.17.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Cinegy.TsDecoder.1.0.17\lib\net452\Cinegy.TsDecoder.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -48,12 +52,7 @@
     <Compile Include="Teletext\Utils.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TsDecoder\TsDecoder.csproj">
-      <Project>{838e853d-214b-406f-843d-a76a1fe42c6c}</Project>
-      <Name>TsDecoder</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
+    <None Include="packages.config" />
     <None Include="TtxDecoder.nuspec" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
