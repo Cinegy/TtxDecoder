@@ -30,8 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Cinegy.TsDecoder, Version=1.0.17.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Cinegy.TsDecoder.1.0.17\lib\net452\Cinegy.TsDecoder.dll</HintPath>
+    <Reference Include="Cinegy.TsDecoder, Version=1.0.19.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Cinegy.TsDecoder.1.0.19\lib\net452\Cinegy.TsDecoder.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
