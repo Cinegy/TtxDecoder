@@ -1,0 +1,7 @@
+/*.user
+/bin
+/obj
+/.vs/Cinegy.TtxDecoder/v14/*.suo
+/.vs/TtxDecoder/v14/*.suo
+/packages/Cinegy.TsDecoder.1.0.17/*.nupkg
+/packages
