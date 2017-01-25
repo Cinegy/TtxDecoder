@@ -3,13 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-<<<<<<< HEAD:TtxDecoder.sln
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cinegy.TtxDecoder", "Cinegy.TtxDecoder\Cinegy.TtxDecoder.csproj", "{77B7A456-9C1B-49D8-93F3-58966473232D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cinegy.TtxDecoder.Tests", "Cinegy.TtxDecoder.Tests\Cinegy.TtxDecoder.Tests.csproj", "{F35A0261-5F85-4598-BDB1-A8A9F5153BA5}"
-=======
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cinegy.TtxDecoder", "Cinegy.TtxDecoder.csproj", "{77B7A456-9C1B-49D8-93F3-58966473232D}"
->>>>>>> fcaeddb143db9a85f1aa0e72957aaed4634bcdbe:Cinegy.TtxDecoder.sln
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
