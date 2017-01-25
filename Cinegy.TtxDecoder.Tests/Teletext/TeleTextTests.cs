@@ -4,6 +4,7 @@ using System.Reflection;
 using Cinegy.TsDecoder.TransportStream;
 using Cinegy.TtxDecoder.Teletext;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using static System.String;
 
 namespace Cinegy.TtxDecoder.Tests.Teletext
 {
@@ -26,17 +27,13 @@ namespace Cinegy.TtxDecoder.Tests.Teletext
             ttxDecoder.TeletextPageAdded += TtxDecoder_TeletextPageAdded;
             //load some data from test file
             var assembly = Assembly.GetExecutingAssembly();
-
-            //var things = assembly.GetManifestResourceNames();
-
+            
             const int readFragmentSize = 1316;
 
             using (var stream = assembly.GetManifestResourceStream(resourceName))
             {
                 if (stream == null) Assert.Fail("Unable to read test resource: " + resourceName);
-
-                var packetCounter = 0;
-
+                
                 var data = new byte[readFragmentSize];
 
                 var readCount = stream.Read(data, 0, readFragmentSize);
@@ -46,9 +43,7 @@ namespace Cinegy.TtxDecoder.Tests.Teletext
                     var tsPackets = factory.GetTsPacketsFromData(data);
 
                     if (tsPackets == null) break;
-
-                    packetCounter += tsPackets.Length;
-
+                    
                     foreach (var tsPacket in tsPackets)
                     {
                         tsDecoder.AddPacket(tsPacket);
@@ -63,40 +58,24 @@ namespace Cinegy.TtxDecoder.Tests.Teletext
                     {
                         break;
                     }
-
-                    //PrintTeletext(ttxDecoder);
                 }
             }
         }
 
-        private void TtxDecoder_TeletextPageAdded(object sender, EventArgs e)
+        private static void TtxDecoder_TeletextPageAdded(object sender, EventArgs e)
         {
+            var decoder = (TeleTextDecoder) sender;
             var teletextArgs = (TeleTextSubtitleEventArgs)e;
-            Console.WriteLine($"Page Rcvd: {teletextArgs.PageNumber},{teletextArgs.Pid}");
 
+            Console.WriteLine($"Page Rcvd - Page Num:{teletextArgs.PageNumber:X}, Service ID: {decoder.ProgramNumber}, PID: {teletextArgs.Pid:X}");
+
+            var lineCtr = 0;
             foreach (var line in teletextArgs.Page)
             {
-                if (String.IsNullOrEmpty(line) || String.IsNullOrEmpty(line.Trim())) continue;
-                Console.WriteLine($"{new string(line.Where(c => !char.IsControl(c)).ToArray())}");
+                lineCtr++;
+                if (IsNullOrEmpty(line) || IsNullOrEmpty(line.Trim())) continue;
+                Console.WriteLine($"Line {lineCtr}: {new string(line.Where(c => !char.IsControl(c)).ToArray())}");
             }
-        }
-
-        private static void PrintTeletext(TeleTextDecoder ttxDecoder)
-        {
-            //    Console.WriteLine(
-            //        $"\nTeleText Subtitles - decoding from Service ID {ttxDecoder.ProgramNumber}\n----------------");
-
-                foreach (var page in ttxDecoder.TeletextDecodedSubtitlePage.Keys)
-                {
-                    //Console.WriteLine($"Live Decoding Page {page:X}\n");
-                    
-                    foreach (var line in ttxDecoder.TeletextDecodedSubtitlePage[page])
-                    {
-                        if (String.IsNullOrEmpty(line) || String.IsNullOrEmpty(line.Trim())) continue;
-                        Console.WriteLine($"{new string(line.Where(c => !char.IsControl(c)).ToArray())}");
-                    }
-                }
-            
         }
     }
 }

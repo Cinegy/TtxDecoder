@@ -107,11 +107,6 @@ namespace Cinegy.TtxDecoder.Teletext
             if (_currentTeletextDescriptor == null)
             {
                 Setup(tsDecoder);
-
-                if (_currentTeletextDescriptor != null)
-                {
-                    Debug.WriteLine($"Locked onto teletext PID for {TeletextPid} ");
-                }
             }
 
             if (tsPacket.Pid != TeletextPid) return;
