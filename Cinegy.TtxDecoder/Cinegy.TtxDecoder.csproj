@@ -7,8 +7,8 @@
     <ProjectGuid>{77B7A456-9C1B-49D8-93F3-58966473232D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TtxDecoder</RootNamespace>
-    <AssemblyName>TtxDecoder</AssemblyName>
+    <RootNamespace>Cinegy.TtxDecoder</RootNamespace>
+    <AssemblyName>Cinegy.TtxDecoder</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
