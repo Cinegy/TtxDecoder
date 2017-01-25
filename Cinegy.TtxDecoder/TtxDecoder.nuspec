@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/Cinegy/TtxDecoder</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
+    <releaseNotes>Refactored to work with a test project</releaseNotes>
     <copyright>Copyright Cinegy GmbH 2017</copyright>
     <tags>Teletext</tags>
   </metadata>
