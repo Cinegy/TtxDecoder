@@ -5,12 +5,3 @@ packages
 *.user
 /TestResults
 *.suo
-=======
-/*.user
-/bin
-/obj
-/.vs/Cinegy.TtxDecoder/v14/*.suo
-/.vs/TtxDecoder/v14/*.suo
-/packages/Cinegy.TsDecoder.1.0.17/*.nupkg
-/packages
->>>>>>> fcaeddb143db9a85f1aa0e72957aaed4634bcdbe
