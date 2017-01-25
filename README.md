@@ -26,4 +26,8 @@ Available on NuGet here:
 
 ##Credits
 
+<<<<<<< HEAD
 Massive credit to Christoffer Branzell from Vericom, for writing the core of the original decoder - it's since been dramatically moved about removing all trace of his work, but all the hard bits came from him!
+=======
+Massive credit to Christoffer Branzell from Vericom, for writing the core of the original decoder - it's since been dramatically moved about removing all trace of his work, but all the hard bits came from him!
+>>>>>>> fcaeddb143db9a85f1aa0e72957aaed4634bcdbe
