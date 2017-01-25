@@ -6,8 +6,8 @@
     <ProjectGuid>{F35A0261-5F85-4598-BDB1-A8A9F5153BA5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TtxDecoderTests</RootNamespace>
-    <AssemblyName>TtxDecoderTests</AssemblyName>
+    <RootNamespace>Cinegy.TtxDecoder.Tests</RootNamespace>
+    <AssemblyName>Cinegy.TtxDecoder.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -36,6 +36,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Cinegy.TsDecoder, Version=1.0.30.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Cinegy.TsDecoder.1.0.30\lib\net452\Cinegy.TsDecoder.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <Choose>
@@ -59,6 +63,14 @@
       <Project>{77B7A456-9C1B-49D8-93F3-58966473232D}</Project>
       <Name>Cinegy.TtxDecoder</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TestStreams\Teletext-bars-1mbps-20170125-095714.ts">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
