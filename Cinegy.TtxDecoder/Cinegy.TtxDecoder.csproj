@@ -52,8 +52,8 @@
     <Compile Include="Teletext\Utils.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Cinegy.TtxDecoder.nuspec" />
     <None Include="packages.config" />
-    <None Include="TtxDecoder.nuspec" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
