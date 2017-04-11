@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/Cinegy/TtxDecoder</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Refactored to work with a test project</releaseNotes>
+    <releaseNotes>First version of new NET Standard release</releaseNotes>
     <copyright>Copyright Cinegy GmbH 2017</copyright>
     <tags>Teletext</tags>
   </metadata>
