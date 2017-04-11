@@ -1,8 +1,8 @@
-#Cinegy Teletext Decoder Library
+# Cinegy Teletext Decoder Library
 
 Use this library to decode classic teletext caption data from DVB transport streams - tested with UK, Swedish and Australian off-air streams. The library takes a dependency on the Cinegy Transport Stream Decoder Library (Apache 2 licensed).;
 
-##How easy is it?
+## How easy is it?
 
 The library was designed to be simple to use and flexible. Use the Cinegy TS decoder to create packets of data from a stream or a file, and pass these packets to the teletext decoder and get results!
 
@@ -10,7 +10,7 @@ You can print live Teletext decoding, and you can use the tool to generate input
 
 See all of this in action inside the Cinegy TS Analyser tool here: [GitHub] [https://github.com/cinegy/tsanalyser]
     
-##Getting the library
+## Getting the library
 
 Just to make your life easier, we auto-build this using AppVeyor and push to NuGet - here is how we are doing right now: 
 
@@ -24,6 +24,6 @@ Available on NuGet here:
 
 [NuGet](https://www.nuget.org/packages/Cinegy.TtxDecoder/)
 
-##Credits
+## Credits
 
 Massive credit to Christoffer Branzell from Vericom, for writing the core of the original decoder - it's since been dramatically moved about removing all trace of his work, but all the hard bits came from him!

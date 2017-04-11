@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cinegy.TtxDecoder", "Cinegy.TtxDecoder\Cinegy.TtxDecoder.csproj", "{77B7A456-9C1B-49D8-93F3-58966473232D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cinegy.TtxDecoder", "Cinegy.TtxDecoder\Cinegy.TtxDecoder.csproj", "{6EBEC7B5-5ECE-46EB-9534-39A3F9BF91A1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cinegy.TtxDecoder.Tests", "Cinegy.TtxDecoder.Tests\Cinegy.TtxDecoder.Tests.csproj", "{F35A0261-5F85-4598-BDB1-A8A9F5153BA5}"
 EndProject
@@ -13,10 +13,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{77B7A456-9C1B-49D8-93F3-58966473232D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{77B7A456-9C1B-49D8-93F3-58966473232D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{77B7A456-9C1B-49D8-93F3-58966473232D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{77B7A456-9C1B-49D8-93F3-58966473232D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6EBEC7B5-5ECE-46EB-9534-39A3F9BF91A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EBEC7B5-5ECE-46EB-9534-39A3F9BF91A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6EBEC7B5-5ECE-46EB-9534-39A3F9BF91A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6EBEC7B5-5ECE-46EB-9534-39A3F9BF91A1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F35A0261-5F85-4598-BDB1-A8A9F5153BA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F35A0261-5F85-4598-BDB1-A8A9F5153BA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F35A0261-5F85-4598-BDB1-A8A9F5153BA5}.Release|Any CPU.ActiveCfg = Release|Any CPU

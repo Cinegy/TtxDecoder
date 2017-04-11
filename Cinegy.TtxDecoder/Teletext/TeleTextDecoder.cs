@@ -154,17 +154,17 @@ namespace Cinegy.TtxDecoder.Teletext
 
         private static void EndAsyncEvent(IAsyncResult iar)
         {
-            var ar = (System.Runtime.Remoting.Messaging.AsyncResult)iar;
-            var invokedMethod = (EventHandler)ar.AsyncDelegate;
+            //var ar = (System.Runtime.Remoting.Messaging.AsyncResult)iar;
+            //var invokedMethod = (EventHandler)ar.AsyncDelegate;
 
-            try
-            {
-                invokedMethod.EndInvoke(iar);
-            }
-            catch
-            {
-                //nothing to do
-            }
+            //try
+            //{
+            //    invokedMethod.EndInvoke(iar);
+            //}
+            //catch
+            //{
+            //    //nothing to do
+            //}
         }
     }
 }
