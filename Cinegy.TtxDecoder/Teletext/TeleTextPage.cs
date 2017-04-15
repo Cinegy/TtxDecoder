@@ -16,10 +16,11 @@
 using System;
 using System.Collections.Generic;
 using Cinegy.TsDecoder.TransportStream;
+using System.Diagnostics;
 
 namespace Cinegy.TtxDecoder.Teletext
 {
-    public class TeleText
+    public class TeleTextPage
     {
         public const byte TransmissionModeParallel = 0;
         public const byte TransmissionModeSerial = 1;
@@ -47,13 +48,13 @@ namespace Cinegy.TtxDecoder.Teletext
 
         public ushort PageNumber { get; set; }// = 0x199;
 
-        public TeleText(ushort page, short pid)
+        public TeleTextPage(ushort page, short pid)
         {
             PageNumber = page;
             Pid = pid;
         }
 
-        public bool DecodeTeletextData(Pes pes)
+        public bool DecodeTeletextData(Pes pes, long pts)
         {
             if (pes.PacketStartCodePrefix != Pes.DefaultPacketStartCodePrefix || pes.StreamId != Pes.PrivateStream1 ||
                 pes.PesPacketLength <= 0) return false;
@@ -76,7 +77,7 @@ namespace Cinegy.TtxDecoder.Teletext
 
                     //ETS 300 706 7.1
                     Utils.ReverseArray(ref data, 2, dataUnitLenght);
-                    DecodeTeletextDataInternal(data);
+                    DecodeTeletextDataInternal(data, pts);
                 }
 
                 startOfSubtitleData += (ushort)(dataUnitLenght + 2);
@@ -84,7 +85,7 @@ namespace Cinegy.TtxDecoder.Teletext
             return false;
         }
 
-        private void DecodeTeletextDataInternal(IList<byte> data)
+        private void DecodeTeletextDataInternal(IList<byte> data, long pts)
         {
             //ETS 300 706, 9.3.1
             var address = (byte)((Utils.UnHam84(data[5]) << 4) + Utils.UnHam84(data[4]));
@@ -94,6 +95,9 @@ namespace Cinegy.TtxDecoder.Teletext
 
             var y = (byte)((address >> 3) & 0x1f);
 
+            if(y!=0)
+             Console.WriteLine($"Y value: {y}, M value: {m}");
+
             //ETS 300 706, 9.4
             byte designationCode = 0;
             if (y > 25 && y < 32)
@@ -102,7 +106,7 @@ namespace Cinegy.TtxDecoder.Teletext
             }
 
             //ETS 300 706, 9.3.1
-            if (0 == y)
+            if (y == 0)
             {
                 //ETS 300 706, 9.3.1.1
                 var pageNumber = (ushort)((m << 8) | (Utils.UnHam84(data[7]) << 4) + Utils.UnHam84(data[6]));
@@ -125,11 +129,14 @@ namespace Cinegy.TtxDecoder.Teletext
 
 
                 if (pageNumber != PageNumber) //wrong page
+                {
+                    //Debug.WriteLine($"Teletext packet with wrong page set (expected {PageNumber}, got {pageNumber})");
                     return;
+                }
 
                 if (_pageBuffer.IsChanged())
                 {
-                    ProcessBuffer();
+                    ProcessBuffer(pts);
                 }
                 
                 _primaryCharset.G0X28 = Utils.Undef;
@@ -140,6 +147,7 @@ namespace Cinegy.TtxDecoder.Teletext
                 _pageBuffer.Clear();
                 _receivingData = true;
             }
+
             //ETS 300 706, 9.3.2
             if ((m == Utils.Magazine(PageNumber)) && (y >= 1) && (y <= 23) && _receivingData)
             {
@@ -262,7 +270,7 @@ namespace Cinegy.TtxDecoder.Teletext
 
         }
 
-        public void ProcessBuffer()
+        public void ProcessBuffer(long pts)
         {
             var page = new string[25];
             for (var y = 0; y < 25; y++)
@@ -282,15 +290,15 @@ namespace Cinegy.TtxDecoder.Teletext
                 }
             }
 
-            OnTeletextPageRecieved(page, PageNumber, Pid);
+            OnTeletextPageRecieved(page, PageNumber, Pid, pts);
             //System.Threading.Thread.Sleep(1000);
         }
 
         public event EventHandler TeletextPageRecieved;
 
-        protected virtual void OnTeletextPageRecieved(string[] page, ushort pageNumber, short pid)
+        protected virtual void OnTeletextPageRecieved(string[] page, ushort pageNumber, short pid, long pts)
         {
-            TeletextPageRecieved?.BeginInvoke(this, new TeleTextSubtitleEventArgs(page, pageNumber, pid), EndAsyncEvent, null);
+            TeletextPageRecieved?.BeginInvoke(this, new TeleTextSubtitleEventArgs(page, pageNumber, pid, pts), EndAsyncEvent, null);
         }
 
 

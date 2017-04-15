@@ -23,8 +23,9 @@ namespace Cinegy.TtxDecoder.Teletext
         public string[] Page { get; set; }
         public ushort PageNumber { get; set; }
         public short Pid { get; set; }
+        public long Pts { get; set; }
 
-        public TeleTextSubtitleEventArgs(IList<string> page, ushort pageNumber, short pid)
+        public TeleTextSubtitleEventArgs(IList<string> page, ushort pageNumber, short pid, long pts)
         {
             Page = new string[page.Count];
 
@@ -35,6 +36,7 @@ namespace Cinegy.TtxDecoder.Teletext
 
             PageNumber = pageNumber;
             Pid = pid;
+            Pts = pts;
         }
     }
 }

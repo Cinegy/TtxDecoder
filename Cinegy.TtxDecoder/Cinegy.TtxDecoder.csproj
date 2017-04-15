@@ -42,7 +42,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Teletext\PageBuffer.cs" />
-    <Compile Include="Teletext\TeleText.cs" />
+    <Compile Include="Teletext\TeleTextPage.cs" />
     <Compile Include="Teletext\TeleTextDecoder.cs" />
     <Compile Include="Teletext\TeleTextSubtitleEventArgs.cs" />
     <Compile Include="Teletext\Utils.cs" />
