@@ -17,10 +17,12 @@ using System;
 using System.Collections.Generic;
 using Cinegy.TsDecoder.TransportStream;
 using System.Diagnostics;
+using System.Reflection;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Cinegy.TtxDecoder.Teletext
 {
-    public class TeleTextPage
+    public class TeleTextSubtitlePage
     {
         public const byte TransmissionModeParallel = 0;
         public const byte TransmissionModeSerial = 1;
@@ -34,6 +36,9 @@ namespace Cinegy.TtxDecoder.Teletext
         private byte _transmissionMode = TransmissionModeSerial;
         private bool _receivingData;
         private readonly PageBuffer _pageBuffer = new PageBuffer();
+
+        private long _referencePts;
+
         
         private Utils.Charset _primaryCharset = new Utils.Charset
         {
@@ -46,11 +51,11 @@ namespace Cinegy.TtxDecoder.Teletext
 
         public short Pid { get; set; }
 
-        public ushort PageNumber { get; set; }// = 0x199;
+        public ushort SubtitlePageNumber { get; set; }// = 0x199;
 
-        public TeleTextPage(ushort page, short pid)
+        public TeleTextSubtitlePage(ushort page, short pid)
         {
-            PageNumber = page;
+            SubtitlePageNumber = page;
             Pid = pid;
         }
 
@@ -67,25 +72,28 @@ namespace Cinegy.TtxDecoder.Teletext
             while (startOfSubtitleData <= pes.PesPacketLength)
             {
                 var dataUnitId = pes.Data[startOfSubtitleData];
-                var dataUnitLenght = pes.Data[startOfSubtitleData + 1];
+                var dataUnitLength = pes.Data[startOfSubtitleData + 1];
 
-                if ((dataUnitId == DataUnitEbuTeletextNonsubtitle || dataUnitId == DataUnitEbuTeletextSubtitle) && dataUnitLenght == SizeOfTeletextPayload)
+                if ((dataUnitId == DataUnitEbuTeletextNonsubtitle || dataUnitId == DataUnitEbuTeletextSubtitle) && dataUnitLength == SizeOfTeletextPayload)
                 {
-                    var data = new byte[dataUnitLenght + 2];
-                    Buffer.BlockCopy(pes.Data, startOfSubtitleData, data, 0, dataUnitLenght + 2);
-
-
+                    var data = new byte[dataUnitLength + 2];
+                    Buffer.BlockCopy(pes.Data, startOfSubtitleData, data, 0, dataUnitLength + 2);
+                    
                     //ETS 300 706 7.1
-                    Utils.ReverseArray(ref data, 2, dataUnitLenght);
-                    DecodeTeletextDataInternal(data, pts);
+                    Utils.ReverseArray(ref data, 2, dataUnitLength);
+
+                    if (_referencePts == 0) _referencePts = pts;
+                    if ((_referencePts > 0) && (pts < _referencePts)) _referencePts = pts;
+
+                    DecodeTeletextPacket(data, pts);
                 }
 
-                startOfSubtitleData += (ushort)(dataUnitLenght + 2);
+                startOfSubtitleData += (ushort)(dataUnitLength + 2);
             }
             return false;
         }
 
-        private void DecodeTeletextDataInternal(IList<byte> data, long pts)
+        private void DecodeTeletextPacket(IList<byte> data, long pts)
         {
             //ETS 300 706, 9.3.1
             var address = (byte)((Utils.UnHam84(data[5]) << 4) + Utils.UnHam84(data[4]));
@@ -95,9 +103,42 @@ namespace Cinegy.TtxDecoder.Teletext
 
             var y = (byte)((address >> 3) & 0x1f);
 
-            if(y!=0)
-             Console.WriteLine($"Y value: {y}, M value: {m}");
+            //if(y>23)
+            var relPts = pts - _referencePts;
 
+            var timeStamp = new TimeSpan(0,0,0,0,(int)(relPts / 90));
+             
+            if (y == 0)
+            {
+                var pageNumber = (ushort)((m << 8) | (Utils.UnHam84(data[7]) << 4) + Utils.UnHam84(data[6]));
+
+                var _eraseFlag = ((Utils.UnHam84(data[9]) & 0x08) == 8);
+
+                if (pageNumber != 0x8EE && pageNumber != 0x8FF)
+                    
+                    Console.WriteLine($"{timeStamp:g} TTX Header Mag: {m}, Page: {pageNumber}, Clear: {_eraseFlag}");
+            }
+            else
+            {
+                Console.WriteLine($"{timeStamp:g} TTX Row: {y}, Mag: {m}");
+               
+                    var row = "";
+                    for (var x = 0; x < 40; x++)
+                    {
+                        var c = (char)Utils.ParityChar(data[6 + x]);
+                        if (c == '\0')
+                        {
+                            row += " ";
+                        }
+                        else
+                        {
+                            row += c;
+                        }
+                    }
+                Console.WriteLine(row);
+            }
+
+            return;
             //ETS 300 706, 9.4
             byte designationCode = 0;
             if (y > 25 && y < 32)
@@ -105,61 +146,74 @@ namespace Cinegy.TtxDecoder.Teletext
                 designationCode = Utils.UnHam84(data[6]);
             }
 
-            //ETS 300 706, 9.3.1
+            //ETS 300 706, 9.3.1 - Page Header
             if (y == 0)
             {
                 //ETS 300 706, 9.3.1.1
                 var pageNumber = (ushort)((m << 8) | (Utils.UnHam84(data[7]) << 4) + Utils.UnHam84(data[6]));
 
-                //ETS 300 706 TableOld 2,C11
-                _transmissionMode = (byte)(Utils.UnHam84(data[7]) & 0x01);
+                //ETS 300 706 Table 2,C11
+                _transmissionMode = (byte)(Utils.UnHam84(data[13]) & 0x01);
 
-                //ETS 300 706 TableOld 2, C12, C13, C14
+                //ETS 300 706 Table 2,C4
+                var _eraseFlag = ((Utils.UnHam84(data[9]) & 0x08) == 8);
+
+                //ETS 300 706 Table 2, C12, C13, C14
                 var charset = (byte)(((Utils.UnHam84(data[13]) & 0x08) + (Utils.UnHam84(data[13]) & 0x04) + (Utils.UnHam84(data[13]) & 0x02)) >> 1);
 
 
-                //ETS 300 706 TableOld 2, C11
+                //ETS 300 706 Table 2, C11
                 if ((_receivingData) && (
-                                        ((_transmissionMode == TransmissionModeSerial) && (Utils.Page(pageNumber) != Utils.Page(PageNumber))) ||
-                                        ((_transmissionMode == TransmissionModeParallel) && (Utils.Page(pageNumber) != Utils.Page(PageNumber)) && (m == Utils.Magazine(PageNumber)))))
+                                        ((_transmissionMode == TransmissionModeSerial) && (Utils.Page(pageNumber) != Utils.Page(SubtitlePageNumber))) ||
+                                        ((_transmissionMode == TransmissionModeParallel) && (Utils.Page(pageNumber) != Utils.Page(SubtitlePageNumber)) && (m == Utils.Magazine(SubtitlePageNumber)))))
                 {
                     _receivingData = false;
                     return;
                 }
 
 
-                if (pageNumber != PageNumber) //wrong page
+                if (pageNumber != SubtitlePageNumber) //wrong page
                 {
-                    //Debug.WriteLine($"Teletext packet with wrong page set (expected {PageNumber}, got {pageNumber})");
+                    //Console.WriteLine($"Teletext packet with wrong page set (expected {SubtitlePageNumber:X}, got {pageNumber:X})");
                     return;
                 }
 
-                if (_pageBuffer.IsChanged())
+                if (_eraseFlag)
+                {
+                    _pageBuffer.Clear();
+                    
+                    Console.WriteLine("Clear page");
+                }
+
+                //Console.WriteLine($"TTX Packet: Y value: {y}, M value: {m}, Mode: {_transmissionMode}, Clear {_eraseFlag}");
+
+               // if (_pageBuffer.IsChanged())
                 {
                     ProcessBuffer(pts);
                 }
-                
+
                 _primaryCharset.G0X28 = Utils.Undef;
 
                 var c = (_primaryCharset.G0M29 != Utils.Undef) ? _primaryCharset.G0M29 : charset;
                 Utils.remap_g0_charset(c, _primaryCharset);
-
-                _pageBuffer.Clear();
+                
                 _receivingData = true;
             }
 
-            //ETS 300 706, 9.3.2
-            if ((m == Utils.Magazine(PageNumber)) && (y >= 1) && (y <= 23) && _receivingData)
+            //ETS 300 706, 9.3.2 - row data
+            if ((m == Utils.Magazine(SubtitlePageNumber)) && (y >= 1) && (y <= 23) && _receivingData)
             {
+                Console.WriteLine($"TTX Packet: Y value: {y}, M value: {m}");
+
                 for (var x = 0; x < 40; x++)
                 {
-                    if (_pageBuffer.GetChar(x, y) == '\0')
+//if (_pageBuffer.GetChar(x, y) == '\0')
                     {
                         _pageBuffer.SetChar(x, y, (char)Utils.ParityChar(data[6 + x]));
                     }
                 }
             }
-            else if ((m == Utils.Magazine(PageNumber)) && (y == 26) && (_receivingData))
+            else if ((m == Utils.Magazine(SubtitlePageNumber)) && (y == 26) && (_receivingData))
             {
                 // ETS 300 706, chapter 12.3.2: X/26 definition
                 byte x26Row = 0;
@@ -211,7 +265,7 @@ namespace Cinegy.TtxDecoder.Teletext
                     }
                 }
             }
-            else if ((m == Utils.Magazine(PageNumber)) && (y == 28) && (_receivingData))
+            else if ((m == Utils.Magazine(SubtitlePageNumber)) && (y == 28) && (_receivingData))
             {
                 // TODO:
                 //   ETS 300 706, chapter 9.4.7: Packet X/28/4
@@ -237,7 +291,7 @@ namespace Cinegy.TtxDecoder.Teletext
                     }
                 }
             }
-            else if ((m == Utils.Magazine(PageNumber)) && (y == 29))
+            else if ((m == Utils.Magazine(SubtitlePageNumber)) && (y == 29))
             {
                 // TODO:
                 //   ETS 300 706, chapter 9.5.1 Packet M/29/0
@@ -290,7 +344,7 @@ namespace Cinegy.TtxDecoder.Teletext
                 }
             }
 
-            OnTeletextPageRecieved(page, PageNumber, Pid, pts);
+            OnTeletextPageRecieved(page, SubtitlePageNumber, Pid, pts);
             //System.Threading.Thread.Sleep(1000);
         }
 

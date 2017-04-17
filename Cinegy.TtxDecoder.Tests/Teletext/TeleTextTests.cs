@@ -12,6 +12,8 @@ namespace Cinegy.TtxDecoder.Tests.Teletext
     [TestClass()]
     public class TeleTextTests
     {
+        private static long _lastPTS = 0;
+
         [TestMethod()]
         public void DecodeTeletextDataTest()
         {
@@ -36,7 +38,7 @@ namespace Cinegy.TtxDecoder.Tests.Teletext
 
             var lastPts = 0L;
 
-            ttxDecoder.TeletextPageAdded += TtxDecoder_TeletextPageAdded;
+          //  ttxDecoder.TeletextPageAdded += TtxDecoder_TeletextPageAdded;
             //load some data from test file
             var assembly = Assembly.GetExecutingAssembly();
             
@@ -65,12 +67,16 @@ namespace Cinegy.TtxDecoder.Tests.Teletext
                     
                     foreach (var tsPacket in tsPackets)
                     {
-                        if (tsPacket.PesHeader.Pts < lastPts)
+                        if (tsPacket.Pid == ttxDecoder.TeletextService?.TeletextPid && tsPacket.PesHeader.Pts != 0)
                         {
-                            Console.WriteLine($"Backward PTS - New PTS: {tsPacket.PesHeader.Pts}, Last PTS: {lastPts} ");
+                            if (tsPacket.PesHeader.Pts < lastPts)
+                            {
+                                Console.WriteLine($"Backward PTS - New PTS: {tsPacket.PesHeader.Pts}, Last PTS: {lastPts} ");
+                            }
+
+                            lastPts = tsPacket.PesHeader.Pts;
                         }
 
-                        lastPts = tsPacket.PesHeader.Pts;
                         tsDecoder.AddPacket(tsPacket);
                         ttxDecoder.AddPacket(tsDecoder, tsPacket);
                     }
@@ -85,12 +91,26 @@ namespace Cinegy.TtxDecoder.Tests.Teletext
                     }
                 }
             }
+
+            Console.WriteLine($"Finsihed - Total TTX Packets: {ttxDecoder.TeletextService.Metric.TtxPacketCount}");
+
+            foreach (var teletextMetricPagePacketCount in ttxDecoder.TeletextService.Metric.PagePacketCounts)
+            {
+                Console.WriteLine($"Magazine: {teletextMetricPagePacketCount.Key}, Count: {teletextMetricPagePacketCount.Value}");
+            }
         }
 
         private static void TtxDecoder_TeletextPageAdded(object sender, EventArgs e)
         {
             var decoder = (TeleTextDecoder) sender;
             var teletextArgs = (TeleTextSubtitleEventArgs)e;
+
+            if (teletextArgs.Pts < _lastPTS)
+            {
+                Console.WriteLine($"Page Backward PTS - New PTS: {teletextArgs.Pts}, Last PTS: {_lastPTS}, Delta: {teletextArgs.Pts - _lastPTS} ");
+            }
+
+            _lastPTS = teletextArgs.Pts;
 
             Console.WriteLine($"Page Rcvd - Page Num:{teletextArgs.PageNumber:X}, Service ID: {decoder.ProgramNumber}, PID: {teletextArgs.Pid:X}, Lines: {teletextArgs.Page.Count()}, PTS: {teletextArgs.Pts}");
 
