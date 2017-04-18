@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
-using System.Threading.Tasks;
-using Cinegy.TsDecoder.TransportStream;
-
-namespace Cinegy.TtxDecoder.Teletext
+﻿namespace Cinegy.TtxDecoder.Teletext
 {
     public class TeletextPacket
     {
@@ -26,10 +18,19 @@ namespace Cinegy.TtxDecoder.Teletext
             Pts = pts;
         }
 
+        internal TeletextPacket(TeletextPacket clone)
+        {
+            DataUnitId = clone.DataUnitId;
+            DataUnitLength = clone.DataUnitLength;
+            Pts = clone.Pts;
+            _data = clone.Data;
+            ParseDataField();
+        }
+
         public int Magazine { get; private set; } = -1;
 
         public int Row { get; private set; } = -1;
-
+        
         public byte DataUnitId { get;  }
 
         public byte DataUnitLength { get; }
@@ -50,16 +51,20 @@ namespace Cinegy.TtxDecoder.Teletext
 
                 //ETS 300 706 7.1
                 Utils.ReverseArray(ref _data, 2, DataUnitLength);
-                
-                var address = (byte) ((Utils.UnHam84(_data[5]) << 4) + Utils.UnHam84(_data[4]));
 
-                Magazine = (byte) (address & 0x7);
-                if (Magazine == 0)
-                    Magazine = 8;
-
-                Row = (byte)((address >> 3) & 0x1f);
-
+                ParseDataField();
             }
+        }
+
+        private void ParseDataField()
+        {
+            var address = (byte)((Utils.UnHam84(_data[5]) << 4) + Utils.UnHam84(_data[4]));
+
+            Magazine = (byte)(address & 0x7);
+            if (Magazine == 0)
+                Magazine = 8;
+
+            Row = (byte)((address >> 3) & 0x1f);
         }
     }
 }

@@ -14,29 +14,16 @@
 */
 
 using System;
-using System.Collections.Generic;
 
 namespace Cinegy.TtxDecoder.Teletext
 {
-    public class TeleTextSubtitleEventArgs : EventArgs
+    public class TeleTextPageReadyEventArgs : EventArgs
     {
-        public string[] Page { get; set; }
-        public ushort PageNumber { get; set; }
-        public short Pid { get; set; }
-        public long Pts { get; set; }
-
-        public TeleTextSubtitleEventArgs(IList<string> page, ushort pageNumber, short pid, long pts)
+        public TeletextPage Page { get; set; }
+        
+        public TeleTextPageReadyEventArgs(TeletextPage page)
         {
-            Page = new string[page.Count];
-
-            for (var i = 0; i < page.Count; i++)
-            {
-                Page[i] = page[i];
-            }
-
-            PageNumber = pageNumber;
-            Pid = pid;
-            Pts = pts;
+            Page = page;
         }
     }
 }

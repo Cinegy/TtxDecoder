@@ -5,3 +5,4 @@ packages
 *.user
 /TestResults
 *.suo
+project.lock.json

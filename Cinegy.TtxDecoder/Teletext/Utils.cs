@@ -341,11 +341,7 @@ namespace Cinegy.TtxDecoder.Teletext
             Hebre = 6
             // ReSharper restore UnusedMember.Local
         }
-
-        public static byte Magazine(ushort p) { return (byte)((p >> 8) & 0xf); }
-
-        public static byte Page(ushort p) { return (byte)(p & 0xff); }
-
+        
         public static void ReverseArray(ref byte[] arr, int start, int count)
         {
             var end = start + count;

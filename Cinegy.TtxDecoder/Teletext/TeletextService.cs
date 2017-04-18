@@ -12,10 +12,9 @@ namespace Cinegy.TtxDecoder.Teletext
     {
         public const byte TransmissionModeParallel = 0;
         public const byte TransmissionModeSerial = 1;
-        public const byte SizeOfTeletextPayload = 44;
 
 
-        //private Dictionary<ushort, TeleTextSubtitlePage> _teletextSubtitlePages;
+        //private Dictionary<ushort, TeleTextSubtitlePageOld> _teletextSubtitlePages;
 
         /// <summary>
         /// Byte indicating the TransmissionMode of the teletext pages (serial or parrallel)
@@ -60,52 +59,35 @@ namespace Cinegy.TtxDecoder.Teletext
 
         public TeletextService()
         {
-           // _teletextSubtitlePages = new Dictionary<ushort, TeleTextSubtitlePage>();
+           // _teletextSubtitlePages = new Dictionary<ushort, TeleTextSubtitlePageOld>();
             Metric = new TeletextMetric();
         }
-        
-        public bool AddData(Pes pes, PesHdr tsPacketPesHeader)
+
+        public void AddData(Pes pes, PesHdr tsPacketPesHeader)
         {
-                if (pes.PacketStartCodePrefix != Pes.DefaultPacketStartCodePrefix || pes.StreamId != Pes.PrivateStream1 ||
-                    pes.PesPacketLength <= 0) return false;
+            //update / store any reference PTS for displaying easy relative values
+            if (ReferencePts == 0) ReferencePts = tsPacketPesHeader.Pts;
+            if ((ReferencePts > 0) && (tsPacketPesHeader.Pts < ReferencePts)) ReferencePts = tsPacketPesHeader.Pts;
 
-                ushort startOfTeletextData = 7;
+            var ttxPackets = TeletextPacketFactory.GetTtxPacketsFromData(pes, tsPacketPesHeader);
 
-                if (pes.OptionalPesHeader.MarkerBits == 2)
-                {
-                    startOfTeletextData += (ushort)(3 + pes.OptionalPesHeader.PesHeaderLength);
-                } 
-                
-                //update / store any reference PTS for displaying easy relative values
-                if (ReferencePts == 0) ReferencePts = tsPacketPesHeader.Pts;
-                if ((ReferencePts > 0) && (tsPacketPesHeader.Pts < ReferencePts)) ReferencePts = tsPacketPesHeader.Pts;
+            if (ttxPackets == null) return;
 
+            foreach (var ttxPacket in ttxPackets)
+            {
+                Metric.AddPacket(ttxPacket);
+                AddPacketToService(ttxPacket);
+            }
 
-                while (startOfTeletextData <= pes.PesPacketLength)
-                {
-                    var ttxPacket = new TeletextPacket(pes.Data[startOfTeletextData], pes.Data[startOfTeletextData + 1], tsPacketPesHeader.Pts);
-
-                    if (ttxPacket.DataUnitLength == SizeOfTeletextPayload)
-                    {
-                        var data = new byte[ttxPacket.DataUnitLength + 2];
-                        Buffer.BlockCopy(pes.Data, startOfTeletextData, data, 0, ttxPacket.DataUnitLength + 2);
-
-                        ttxPacket.Data = data;
-
-                        Metric.AddPacket(ttxPacket);
-
-                        AddPacketToService(ttxPacket);
-                    }
-
-                    startOfTeletextData += (ushort)(ttxPacket.DataUnitLength + 2);
-                }
-                return false;            
         }
 
         private void AddPacketToService(TeletextPacket packet)
         { 
-            //TODO: check for any service-wide packets here
-            
+            if (packet.Row == 30)
+            {
+                //this is a service-wide enhancement packet 
+                //TODO: This
+            }
             
             //if packet was not service-wide, add to magazines:
             AddPacketToMagazines(packet);  
@@ -121,5 +103,20 @@ namespace Cinegy.TtxDecoder.Teletext
             
             Magazines[packet.Magazine].AddPacket(packet);
         }
+
+        public event EventHandler TeletextPageReady;
+
+        public event EventHandler TeletextPageCleared;
+
+        internal virtual void OnTeletextPageReady(TeletextPage page)
+        {
+            TeletextPageReady?.Invoke(this,new TeleTextPageReadyEventArgs(page));
+        }
+        
+        internal virtual void OnTeletextPageCleared(int pageNumber, long pts)
+        {
+            TeletextPageCleared?.Invoke(this, new TeletextPageClearedEventArgs(pageNumber, pts));
+        }
+        
     }
 }

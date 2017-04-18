@@ -17,11 +17,12 @@ namespace Cinegy.TtxDecoder.Tests.Teletext
         [TestMethod()]
         public void DecodeTeletextDataTest()
         {
-            List<string> resources = new List<string>();
-
-            //resources.Add("Cinegy.TtxDecoder.Tests.TestStreams.Teletext-bars-1mbps-20170125-095714.ts");
-            resources.Add("Cinegy.TtxDecoder.Tests.TestStreams.PID_0x0163.bin");
-
+            var resources = new List<string>
+            {
+                "Cinegy.TtxDecoder.Tests.TestStreams.Teletext-bars-1mbps-20170125-095714.ts",
+                "Cinegy.TtxDecoder.Tests.TestStreams.PID_0x0163.bin"
+            };
+            
             foreach(var resource in resources)
             {
                 LoadTestFileCheckText(resource);
@@ -36,9 +37,11 @@ namespace Cinegy.TtxDecoder.Tests.Teletext
             var ttxDecoder = new TeleTextDecoder();
             var factory = new TsPacketFactory();
 
-            var lastPts = 0L;
+            ttxDecoder.TeletextService.TeletextPageReady += TeletextServiceTeletextPageReady;
+            ttxDecoder.TeletextService.TeletextPageCleared += TeletextService_TeletextPageCleared;
 
-          //  ttxDecoder.TeletextPageAdded += TtxDecoder_TeletextPageAdded;
+            var lastPts = 0L;
+            
             //load some data from test file
             var assembly = Assembly.GetExecutingAssembly();
             
@@ -78,7 +81,7 @@ namespace Cinegy.TtxDecoder.Tests.Teletext
                         }
 
                         tsDecoder.AddPacket(tsPacket);
-                        ttxDecoder.AddPacket(tsDecoder, tsPacket);
+                        ttxDecoder.AddPacket(tsPacket, tsDecoder);
                     }
 
                     if (stream.Position < stream.Length)
@@ -92,34 +95,39 @@ namespace Cinegy.TtxDecoder.Tests.Teletext
                 }
             }
 
-            Console.WriteLine($"Finsihed - Total TTX Packets: {ttxDecoder.TeletextService.Metric.TtxPacketCount}");
+            if (ttxDecoder.TeletextService?.Metric == null) return;
 
-            foreach (var teletextMetricPagePacketCount in ttxDecoder.TeletextService.Metric.PagePacketCounts)
+            Console.WriteLine($"Finsihed - Total TTX Packets: {ttxDecoder.TeletextService.Metric.TtxPacketCount}");
+            
+            foreach (var teletextMetricPagePacketCount in ttxDecoder.TeletextService?.Metric.PagePacketCounts)
             {
                 Console.WriteLine($"Magazine: {teletextMetricPagePacketCount.Key}, Count: {teletextMetricPagePacketCount.Value}");
             }
         }
 
-        private static void TtxDecoder_TeletextPageAdded(object sender, EventArgs e)
+        private void TeletextService_TeletextPageCleared(object sender, EventArgs e)
         {
-            var decoder = (TeleTextDecoder) sender;
-            var teletextArgs = (TeleTextSubtitleEventArgs)e;
+            var ttxEventArgs = e as TeletextPageClearedEventArgs;
+            if (ttxEventArgs == null) return;
 
-            if (teletextArgs.Pts < _lastPTS)
+            var timeStamp = new TimeSpan(0, 0, 0, 0, (int)(ttxEventArgs.Pts / 90));
+            
+            Console.WriteLine($"{timeStamp:hh\\:mm\\:ss\\.ff} [{ttxEventArgs.PageNumber}] - CLEAR");
+            
+        }
+
+        private void TeletextServiceTeletextPageReady(object sender, EventArgs e)
+        {
+            var ttxEventArgs = e as TeleTextPageReadyEventArgs;
+
+            if(ttxEventArgs==null) return;
+
+            var timeStamp = new TimeSpan(0, 0, 0, 0, (int)(ttxEventArgs.Page.Pts / 90));
+
+            foreach (var row in ttxEventArgs.Page.Rows)
             {
-                Console.WriteLine($"Page Backward PTS - New PTS: {teletextArgs.Pts}, Last PTS: {_lastPTS}, Delta: {teletextArgs.Pts - _lastPTS} ");
-            }
-
-            _lastPTS = teletextArgs.Pts;
-
-            Console.WriteLine($"Page Rcvd - Page Num:{teletextArgs.PageNumber:X}, Service ID: {decoder.ProgramNumber}, PID: {teletextArgs.Pid:X}, Lines: {teletextArgs.Page.Count()}, PTS: {teletextArgs.Pts}");
-
-            var lineCtr = 0;
-            foreach (var line in teletextArgs.Page)
-            {
-                lineCtr++;
-                if (IsNullOrEmpty(line) || IsNullOrEmpty(line.Trim())) continue;
-                Console.WriteLine($"Line {lineCtr}: {new string(line.Where(c => !char.IsControl(c)).ToArray())}");
+                if(row.IsChanged() && !IsNullOrWhiteSpace(row.GetPlainRow()))    
+                    Console.WriteLine($"{timeStamp:hh\\:mm\\:ss\\.ff} [{ttxEventArgs.Page.PageNum}] ({row.RowNum}): {row.GetPlainRow()}");
             }
         }
     }

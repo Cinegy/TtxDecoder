@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Cinegy.TsDecoder.TransportStream;
 
 namespace Cinegy.TtxDecoder.Teletext
@@ -25,7 +26,7 @@ namespace Cinegy.TtxDecoder.Teletext
         private Pes _currentTeletextPes;
 
 
-        public TeletextService TeletextService { get; set; }
+        public TeletextService TeletextService { get; set; } = new TeletextService();
 
         /// <summary>
         /// The Program Number of the service that is used as source for teletext data - can be set by constructor only, otherwise default program will be used.
@@ -39,9 +40,9 @@ namespace Cinegy.TtxDecoder.Teletext
 
         public TeleTextDecoder()
         {
-            
+
         }
-        
+
         public bool FindTeletextService(TsDecoder.TransportStream.TsDecoder tsDecoder, out EsInfo esStreamInfo, out TeletextDescriptor teletextDescriptor)
         {
             if (tsDecoder == null) throw new InvalidOperationException("Null reference to TS Decoder");
@@ -64,8 +65,8 @@ namespace Cinegy.TtxDecoder.Teletext
 
                 esStreamInfo = tsDecoder.GetEsStreamForProgramNumberByTag(ProgramNumber, 0x6, 0x56);
 
-                teletextDescriptor = tsDecoder.GetDescriptorForProgramNumberByTag<TeletextDescriptor>(ProgramNumber, Pes.PrivateStream1, 0x56);
-
+                teletextDescriptor = tsDecoder.GetDescriptorForProgramNumberByTag<TeletextDescriptor>(ProgramNumber, 0x6, 0x56);
+                
                 return teletextDescriptor != null;
             }
         }
@@ -75,40 +76,23 @@ namespace Cinegy.TtxDecoder.Teletext
             EsInfo esStreamInfo;
             TeletextDescriptor ttxDesc;
 
-            if(FindTeletextService(tsDecoder, out esStreamInfo,out ttxDesc))
+            if (FindTeletextService(tsDecoder, out esStreamInfo, out ttxDesc))
             {
-               // Setup(ttxDesc, esStreamInfo.ElementaryPid);
+                Setup(ttxDesc, esStreamInfo.ElementaryPid);
             }
 
         }
 
-        //public void Setup(TeletextDescriptor teletextDescriptor, short teletextPid)
-        //{
-        //    TeletextService = new TeletextService { TeletextPid = teletextPid };
-            
-        //    _currentTeletextDescriptor = teletextDescriptor;
+        public void Setup(TeletextDescriptor teletextDescriptor, short teletextPid)
+        {
+            _currentTeletextDescriptor = teletextDescriptor;
 
-        //    foreach (var lang in teletextDescriptor.Languages)
-        //    {
-        //        if (_teletextSubtitlePages == null)
-        //        {
-        //            _teletextSubtitlePages = new Dictionary<ushort, TeleTextSubtitlePage>();
-        //        }
+            var defaultLang = teletextDescriptor.Languages.FirstOrDefault();
 
-        //        var m = lang.TeletextMagazineNumber;
-        //        if (lang.TeletextMagazineNumber == 0)
-        //        {
-        //            m = 8;
-        //        }
-        //        var page = (ushort)((m << 8) + lang.TeletextPageNumber);
+            if(defaultLang==null) return;
 
-        //        if (_teletextSubtitlePages.ContainsKey(page)) continue;
-
-        //        _teletextSubtitlePages.Add(page, new TeleTextSubtitlePage(page, TeletextPid));
-        //        _teletextSubtitlePages[page].TeletextPageRecieved += TeleTextDecoder_TeletextPageRecieved;
-
-        //    }
-        //}
+            Setup(defaultLang.TeletextMagazineNumber, defaultLang.TeletextPageNumber, teletextPid);
+        }
 
         public void Setup(int magazineNum, int pageNum, short teletextPid)
         {
@@ -119,92 +103,40 @@ namespace Cinegy.TtxDecoder.Teletext
 
             var page = (ushort)((magazineNum << 8) + pageNum);
 
-            TeletextService = new TeletextService
-            {
-                TeletextPid = teletextPid,
-                MagazineFilter = magazineNum,
-                PageFilter =  page
-            };
+            TeletextService.TeletextPid = teletextPid;
+            TeletextService.MagazineFilter = magazineNum;
+            TeletextService.PageFilter = page;
 
-
-
-
-
-
-            //if (_teletextSubtitlePages.ContainsKey(page)) return;
-
-            //_teletextSubtitlePages.Add(page, new TeleTextSubtitlePage(page, TeletextPid));
-            //_teletextSubtitlePages[page].TeletextPageRecieved += TeleTextDecoder_TeletextPageRecieved;
-            
         }
 
-        public void AddPacket(TsDecoder.TransportStream.TsDecoder tsDecoder, TsPacket tsPacket)
+        public void AddPacket(TsPacket tsPacket, TsDecoder.TransportStream.TsDecoder tsDecoder = null)
         {
-            if((TeletextService==null) ||  (TeletextService.TeletextPid == -1))
+            if ((TeletextService == null) || (TeletextService.TeletextPid == -1))
             {
                 Setup(tsDecoder);
             }
 
-            if (tsPacket.Pid != TeletextService.TeletextPid) return;
-
+            if (tsPacket.Pid != TeletextService?.TeletextPid) return;
+            
             if (tsPacket.PayloadUnitStartIndicator)
             {
                 if (_currentTeletextPes == null)
                 {
                     _currentTeletextPes = new Pes(tsPacket);
                 }
-
-                if (_currentTeletextPes.HasAllBytes())
-                {
-                    _currentTeletextPes.Decode();
-
-                    TeletextService.AddData(_currentTeletextPes, tsPacket.PesHeader);
-                    //foreach (var key in _teletextSubtitlePages.Keys)
-                    //{
-                    //    _teletextSubtitlePages[key].DecodeTeletextData(_currentTeletextPes, tsPacket.PesHeader.Pts);
-                    //}
-
-                    _currentTeletextPes = null;
-                }
             }
             else
             {
                 _currentTeletextPes?.Add(tsPacket);
             }
+
+            if (_currentTeletextPes?.HasAllBytes() != true) return;
+
+            _currentTeletextPes.Decode();
+
+            TeletextService.AddData(_currentTeletextPes, tsPacket.PesHeader);
+
+            _currentTeletextPes = null;
         }
-
-        //private void TeleTextDecoder_TeletextPageRecieved(object sender, EventArgs e)
-        //{
-        //    var teletextArgs = (TeleTextSubtitleEventArgs)e;
-
-        //    lock (TeletextDecodedSubtitlePage)
-        //    {
-        //        if (!TeletextDecodedSubtitlePage.ContainsKey(teletextArgs.PageNumber))
-        //        {
-        //            TeletextDecodedSubtitlePage.Add(teletextArgs.PageNumber, new string[0]);
-        //        }
-
-        //        TeletextDecodedSubtitlePage[teletextArgs.PageNumber] = teletextArgs.Page;
-        //    }
-
-        //    TeletextPageAdded?.BeginInvoke(this, teletextArgs, EndAsyncEvent, null);
-        //}
-
-        //public event EventHandler TeletextPageAdded;
-
-        //private static void EndAsyncEvent(IAsyncResult iar)
-        //{
-            //var ar = (System.Runtime.Remoting.Messaging.AsyncResult)iar;
-            //var invokedMethod = (EventHandler)ar.AsyncDelegate;
-
-            //try
-            //{
-            //    invokedMethod.EndInvoke(iar);
-            //}
-            //catch
-            //{
-            //    //nothing to do
-            //}
-        //}
     }
 }
