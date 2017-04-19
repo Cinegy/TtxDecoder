@@ -26,7 +26,7 @@ namespace Cinegy.TtxDecoder.Teletext
         private Pes _currentTeletextPes;
 
 
-        public TeletextService TeletextService { get; set; } = new TeletextService();
+        public TeletextService Service { get; set; } = new TeletextService();
 
         /// <summary>
         /// The Program Number of the service that is used as source for teletext data - can be set by constructor only, otherwise default program will be used.
@@ -63,6 +63,8 @@ namespace Cinegy.TtxDecoder.Teletext
 
                 if (ProgramNumber == 0) return false;
 
+                Service.ProgramNumber = ProgramNumber;
+
                 esStreamInfo = tsDecoder.GetEsStreamForProgramNumberByTag(ProgramNumber, 0x6, 0x56);
 
                 teletextDescriptor = tsDecoder.GetDescriptorForProgramNumberByTag<TeletextDescriptor>(ProgramNumber, 0x6, 0x56);
@@ -91,6 +93,8 @@ namespace Cinegy.TtxDecoder.Teletext
 
             if(defaultLang==null) return;
 
+            Service.AssociatedDescriptor = teletextDescriptor;
+
             Setup(defaultLang.TeletextMagazineNumber, defaultLang.TeletextPageNumber, teletextPid);
         }
 
@@ -103,20 +107,20 @@ namespace Cinegy.TtxDecoder.Teletext
 
             var page = (ushort)((magazineNum << 8) + pageNum);
 
-            TeletextService.TeletextPid = teletextPid;
-            TeletextService.MagazineFilter = magazineNum;
-            TeletextService.PageFilter = page;
+            Service.TeletextPid = teletextPid;
+            Service.MagazineFilter = magazineNum;
+            Service.PageFilter = page;
 
         }
 
         public void AddPacket(TsPacket tsPacket, TsDecoder.TransportStream.TsDecoder tsDecoder = null)
         {
-            if ((TeletextService == null) || (TeletextService.TeletextPid == -1))
+            if ((Service == null) || (Service.TeletextPid == -1))
             {
                 Setup(tsDecoder);
             }
 
-            if (tsPacket.Pid != TeletextService?.TeletextPid) return;
+            if (tsPacket.Pid != Service?.TeletextPid) return;
             
             if (tsPacket.PayloadUnitStartIndicator)
             {
@@ -134,7 +138,7 @@ namespace Cinegy.TtxDecoder.Teletext
 
             _currentTeletextPes.Decode();
 
-            TeletextService.AddData(_currentTeletextPes, tsPacket.PesHeader);
+            Service.AddData(_currentTeletextPes, tsPacket.PesHeader);
 
             _currentTeletextPes = null;
         }

@@ -37,8 +37,8 @@ namespace Cinegy.TtxDecoder.Tests.Teletext
             var ttxDecoder = new TeleTextDecoder();
             var factory = new TsPacketFactory();
 
-            ttxDecoder.TeletextService.TeletextPageReady += TeletextServiceTeletextPageReady;
-            ttxDecoder.TeletextService.TeletextPageCleared += TeletextService_TeletextPageCleared;
+            ttxDecoder.Service.TeletextPageReady += ServiceTeletextPageReady;
+            ttxDecoder.Service.TeletextPageCleared += Service_TeletextPageCleared;
 
             var lastPts = 0L;
             
@@ -47,11 +47,13 @@ namespace Cinegy.TtxDecoder.Tests.Teletext
             
             const int readFragmentSize = 1316;
 
+            //using (var stream = System.IO.File.OpenRead(resourceName))
+
             using (var stream = assembly.GetManifestResourceStream(resourceName))
             {
                 if (stream == null) Assert.Fail("Unable to read test resource: " + resourceName);
 
-                Console.WriteLine($"Reading test resource: {resourceName}");   
+                Console.WriteLine($"Reading test resource: {resourceName}");
                 var data = new byte[readFragmentSize];
 
                 var readCount = stream.Read(data, 0, readFragmentSize);
@@ -67,10 +69,10 @@ namespace Cinegy.TtxDecoder.Tests.Teletext
                     var tsPackets = factory.GetTsPacketsFromData(data);
 
                     if (tsPackets == null) break;
-                    
+
                     foreach (var tsPacket in tsPackets)
                     {
-                        if (tsPacket.Pid == ttxDecoder.TeletextService?.TeletextPid && tsPacket.PesHeader.Pts != 0)
+                        if (tsPacket.Pid == ttxDecoder.Service?.TeletextPid && tsPacket.PesHeader.Pts != 0)
                         {
                             if (tsPacket.PesHeader.Pts < lastPts)
                             {
@@ -95,17 +97,17 @@ namespace Cinegy.TtxDecoder.Tests.Teletext
                 }
             }
 
-            if (ttxDecoder.TeletextService?.Metric == null) return;
+            if (ttxDecoder.Service?.Metric == null) return;
 
-            Console.WriteLine($"Finsihed - Total TTX Packets: {ttxDecoder.TeletextService.Metric.TtxPacketCount}");
+            Console.WriteLine($"Finsihed - Total TTX Packets: {ttxDecoder.Service.Metric.TtxPacketCount}");
             
-            foreach (var teletextMetricPagePacketCount in ttxDecoder.TeletextService?.Metric.PagePacketCounts)
+            foreach (var teletextMetricPagePacketCount in ttxDecoder.Service?.Metric.PagePacketCounts)
             {
                 Console.WriteLine($"Magazine: {teletextMetricPagePacketCount.Key}, Count: {teletextMetricPagePacketCount.Value}");
             }
         }
 
-        private void TeletextService_TeletextPageCleared(object sender, EventArgs e)
+        private void Service_TeletextPageCleared(object sender, EventArgs e)
         {
             var ttxEventArgs = e as TeletextPageClearedEventArgs;
             if (ttxEventArgs == null) return;
@@ -116,7 +118,7 @@ namespace Cinegy.TtxDecoder.Tests.Teletext
             
         }
 
-        private void TeletextServiceTeletextPageReady(object sender, EventArgs e)
+        private void ServiceTeletextPageReady(object sender, EventArgs e)
         {
             var ttxEventArgs = e as TeleTextPageReadyEventArgs;
 

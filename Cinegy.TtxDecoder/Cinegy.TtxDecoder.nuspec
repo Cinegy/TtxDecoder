@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/Cinegy/TtxDecoder</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>First version of new NET Standard release</releaseNotes>
+    <releaseNotes>Functional pre-release version of refactored object model for Teletext subtitle decoding</releaseNotes>
     <copyright>Copyright Cinegy GmbH 2017</copyright>
     <tags>Teletext</tags>
   </metadata>
