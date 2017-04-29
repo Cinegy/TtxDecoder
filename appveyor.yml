@@ -5,7 +5,7 @@ assembly_info:
   file: '**\AssemblyInfo.*'
   assembly_version: '{version}'
   assembly_file_version: '{version}'
-  assembly_informational_version: '{version}-alpha1'
+  assembly_informational_version: '{version}-alpha2'
 build:
   project: Cinegy.TtxDecoder.sln
   publish_nuget: true
