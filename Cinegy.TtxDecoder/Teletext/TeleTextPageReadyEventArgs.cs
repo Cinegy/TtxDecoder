@@ -17,11 +17,11 @@ using System;
 
 namespace Cinegy.TtxDecoder.Teletext
 {
-    public class TeleTextPageReadyEventArgs : EventArgs
+    public class TeletextPageReadyEventArgs : EventArgs
     {
         public TeletextPage Page { get; set; }
         
-        public TeleTextPageReadyEventArgs(TeletextPage page)
+        public TeletextPageReadyEventArgs(TeletextPage page)
         {
             Page = page;
         }

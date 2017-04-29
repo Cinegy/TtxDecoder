@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Cinegy.TtxDecoder.Teletext
+﻿namespace Cinegy.TtxDecoder.Teletext
 {
     public class TeletextPage
     {
@@ -28,11 +26,7 @@ namespace Cinegy.TtxDecoder.Teletext
         public void AddPacket(TeletextPacket packet)
         {
             Pts = packet.Pts;
-
-            var relPts = packet.Pts - ParentMagazine.ParentService.ReferencePts;
-
-           // var timeStamp = new TimeSpan(0, 0, 0, 0, (int)(relPts / 90));
-
+            
             if (packet.Row >= 24) return;
             for (var x = 0; x < 40; x++)
             {
@@ -41,8 +35,6 @@ namespace Cinegy.TtxDecoder.Teletext
                     
                 Rows[packet.Row].SetChar(x,c);
             }
-
-            //Console.WriteLine($"{timeStamp:hh\\:mm\\:ss\\.ff} ({packet.Row}): {Rows[packet.Row].GetPlainRow()}");
         }
 
     }

@@ -27,7 +27,7 @@
             ParseDataField();
         }
 
-        public int Magazine { get; private set; } = -1;
+        public ushort Magazine { get; private set; }
 
         public int Row { get; private set; } = -1;
         

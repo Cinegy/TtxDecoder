@@ -1,7 +1,5 @@
 ﻿using System.Resources;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
@@ -9,7 +7,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Cinegy.TtxDecoder")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Cinegy GmbH")]
 [assembly: AssemblyProduct("Cinegy.TtxDecoder")]
 [assembly: AssemblyCopyright("Copyright © Cinegy GmbH 2017")]
 [assembly: AssemblyTrademark("")]
@@ -28,4 +26,4 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("2.0.0.0")]
 [assembly: AssemblyFileVersion("2.0.0.0")]
-[assembly: AssemblyInformationalVersion("2.0.0-alpha1")]
+[assembly: AssemblyInformationalVersion("2.0.0-alpha2")]

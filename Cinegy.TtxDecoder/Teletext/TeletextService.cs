@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Cinegy.TsDecoder.TransportStream;
 using Cinegy.TtxDecoder.Metrics;
 
@@ -46,7 +43,7 @@ namespace Cinegy.TtxDecoder.Teletext
         
         //TODO: Implement
         /// <summary>
-        /// Optional value to restrice decodec packets to the specified page number (reduces callback events)
+        /// Optional value to restrice decodec packets to the specified page number (tens and units element only - reduces callback events)
         /// </summary>
         public int PageFilter { get; set; } = -1;
 
@@ -68,7 +65,7 @@ namespace Cinegy.TtxDecoder.Teletext
         
         public TeletextService()
         {
-            Metric = new TeletextMetric();
+            Metric = new TeletextMetric(this);
         }
 
         public void AddData(Pes pes, PesHdr tsPacketPesHeader)
@@ -107,7 +104,7 @@ namespace Cinegy.TtxDecoder.Teletext
                 if (packet.Magazine != MagazineFilter) return; //magazine does not match filter, so skip processing
 
             //add this packet to the magazines and their pages associated with this service
-            if (!Magazines.ContainsKey(packet.Magazine)) Magazines.Add(packet.Magazine, new TeletextMagazine { ParentService = this });
+            if (!Magazines.ContainsKey(packet.Magazine)) Magazines.Add(packet.Magazine, new TeletextMagazine(packet.Magazine) { ParentService = this });
 
             Magazines[packet.Magazine].AddPacket(packet);
         }
@@ -118,7 +115,7 @@ namespace Cinegy.TtxDecoder.Teletext
 
         internal virtual void OnTeletextPageReady(TeletextPage page)
         {
-            TeletextPageReady?.Invoke(this, new TeleTextPageReadyEventArgs(page));
+            TeletextPageReady?.Invoke(this, new TeletextPageReadyEventArgs(page));
         }
 
         internal virtual void OnTeletextPageCleared(int pageNumber, long pts)

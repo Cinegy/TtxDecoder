@@ -14,13 +14,12 @@
 */
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Cinegy.TsDecoder.TransportStream;
 
 namespace Cinegy.TtxDecoder.Teletext
 {
-    public class TeleTextDecoder
+    public class TeletextDecoder
     {
         private TeletextDescriptor _currentTeletextDescriptor;
         private Pes _currentTeletextPes;
@@ -33,12 +32,12 @@ namespace Cinegy.TtxDecoder.Teletext
         /// </summary>
         public ushort ProgramNumber { get; private set; }
 
-        public TeleTextDecoder(ushort programNumber)
+        public TeletextDecoder(ushort programNumber)
         {
             ProgramNumber = programNumber;
         }
 
-        public TeleTextDecoder()
+        public TeletextDecoder()
         {
 
         }
@@ -105,11 +104,9 @@ namespace Cinegy.TtxDecoder.Teletext
                 magazineNum = 8;
             }
 
-            var page = (ushort)((magazineNum << 8) + pageNum);
-
             Service.TeletextPid = teletextPid;
             Service.MagazineFilter = magazineNum;
-            Service.PageFilter = page;
+            Service.PageFilter = pageNum;
 
         }
 

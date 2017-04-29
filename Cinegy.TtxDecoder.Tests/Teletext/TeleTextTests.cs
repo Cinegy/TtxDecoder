@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Reflection;
 using Cinegy.TsDecoder.TransportStream;
 using Cinegy.TtxDecoder.Teletext;
@@ -10,7 +9,7 @@ using System.Collections.Generic;
 namespace Cinegy.TtxDecoder.Tests.Teletext
 {
     [TestClass()]
-    public class TeleTextTests
+    public class TeletextTests
     {
         private static long _lastPTS = 0;
 
@@ -34,7 +33,7 @@ namespace Cinegy.TtxDecoder.Tests.Teletext
         private void LoadTestFileCheckText(string resourceName)
         {
             var tsDecoder = new TsDecoder.TransportStream.TsDecoder();
-            var ttxDecoder = new TeleTextDecoder();
+            var ttxDecoder = new TeletextDecoder();
             var factory = new TsPacketFactory();
 
             ttxDecoder.Service.TeletextPageReady += ServiceTeletextPageReady;
@@ -120,7 +119,7 @@ namespace Cinegy.TtxDecoder.Tests.Teletext
 
         private void ServiceTeletextPageReady(object sender, EventArgs e)
         {
-            var ttxEventArgs = e as TeleTextPageReadyEventArgs;
+            var ttxEventArgs = e as TeletextPageReadyEventArgs;
 
             if(ttxEventArgs==null) return;
 

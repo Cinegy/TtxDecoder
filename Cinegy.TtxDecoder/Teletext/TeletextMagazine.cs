@@ -1,11 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.IO;
 
 namespace Cinegy.TtxDecoder.Teletext
 {
     public class TeletextMagazine
     {
         private int _currentPageNumber = -1;
+
+        public ushort MagazineNum { get; set; }
+
+        public TeletextMagazine(ushort magazineNumber)
+        {
+            MagazineNum = magazineNumber;
+        }
 
         /// <summary>
         /// A Dictionary of Teletext Magazines, which themselves may contain a collection of pages
@@ -16,6 +23,9 @@ namespace Cinegy.TtxDecoder.Teletext
 
         public void AddPacket(TeletextPacket packet)
         {
+            if(packet.Magazine != MagazineNum)
+                throw new InvalidDataException($"Packet for magazine {packet.Magazine} added to magazine {MagazineNum}");
+
             if (packet.Row == 29)
             {
                 //this is a magazine-specific packet, which should set some over-rideable defaults for any pages
@@ -43,6 +53,8 @@ namespace Cinegy.TtxDecoder.Teletext
 
                 _currentPageNumber = headerPacket.Page;
 
+                if (ParentService.PageFilter != -1 && headerPacket.Page != ParentService.PageFilter) return;
+
                 if (_currentPageNumber == 0x8EE || _currentPageNumber == 0x8FF || !headerPacket.EraseFlag) return;
                 
                 if (!Pages.ContainsKey(_currentPageNumber)) return;
@@ -52,6 +64,8 @@ namespace Cinegy.TtxDecoder.Teletext
             }
             else
             {
+                if (ParentService.PageFilter != -1 && _currentPageNumber != ParentService.PageFilter) return;
+
                 //any remaining row addresses are page-specific, and shall be processed within that page
                 AddPacketToPages(packet);
             }
@@ -60,9 +74,6 @@ namespace Cinegy.TtxDecoder.Teletext
 
         private void AddPacketToPages(TeletextPacket packet)
         {
-            //if (PageFilter > -1)
-            //    if (packet.Magazine != MagazineFilter) return; //magazine does not match filter, so skip processing
-
             //add this packet to the magazines and their pages associated with this service
             if (!Pages.ContainsKey(_currentPageNumber))
                 Pages.Add(_currentPageNumber, new TeletextPage {ParentMagazine = this, PageNum = _currentPageNumber});

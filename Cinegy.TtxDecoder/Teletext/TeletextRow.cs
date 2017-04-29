@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 
 namespace Cinegy.TtxDecoder.Teletext
 {
@@ -31,6 +27,11 @@ namespace Cinegy.TtxDecoder.Teletext
         public string GetPlainRow()
         {
             return new string(_buffer.Where(c => !char.IsControl(c)).ToArray());
+        }
+
+        public string GetRowWithControlChars()
+        {
+            return new string(_buffer);
         }
 
         private bool _changed;

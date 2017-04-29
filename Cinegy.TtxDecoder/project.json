@@ -1,6 +1,7 @@
 ﻿{
   "supports": {},
   "dependencies": {
+    "Cinegy.Telemetry": "2.0.8-alpha1",
     "Cinegy.TsDecoder": "2.0.47-alpha",
     "Microsoft.NETCore.Portable.Compatibility": "1.0.1",
     "NETStandard.Library": "1.6.0"
