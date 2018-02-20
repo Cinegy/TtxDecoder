@@ -1,11 +1,13 @@
 version: 2.0.{build}
 configuration: Release
-assembly_info:
+dotnet_csproj:
   patch: true
-  file: '**\AssemblyInfo.*'
+  file: '**\*.csproj'
+  version: '{version}'
+  package_version: '{version}'
   assembly_version: '{version}'
-  assembly_file_version: '{version}'
-  assembly_informational_version: '{version}-alpha2'
+  file_version: '{version}'
+  informational_version: '{version}-beta'
 build:
   project: Cinegy.TtxDecoder.sln
   publish_nuget: true
@@ -14,15 +16,11 @@ before_build:
 - cmd: nuget restore
 after_build:
 - cmd: >-
-    7z a Cinegy.TtxDecoder-%APPVEYOR_REPO_BRANCH%-%APPVEYOR_BUILD_VERSION%.zip %APPVEYOR_BUILD_FOLDER%\Cinegy.TtxDecoder\bin\release\Cinegy.TtxDecoder.dll
-
-    appveyor PushArtifact Cinegy.TtxDecoder-%APPVEYOR_REPO_BRANCH%-%APPVEYOR_BUILD_VERSION%.zip
-
-    7z a Cinegy.TtxDecoder-%APPVEYOR_REPO_BRANCH%-%APPVEYOR_BUILD_VERSION%-PDB.zip %APPVEYOR_BUILD_FOLDER%\Cinegy.TtxDecoder\bin\release
+    7z a Cinegy.TtxDecoder-%APPVEYOR_REPO_BRANCH%-%APPVEYOR_BUILD_VERSION%-PDB.zip %APPVEYOR_BUILD_FOLDER%\Cinegy.TtxDecoder\bin
 
     appveyor PushArtifact Cinegy.TtxDecoder-%APPVEYOR_REPO_BRANCH%-%APPVEYOR_BUILD_VERSION%-PDB.zip
 deploy:
 - provider: NuGet
   api_key:
-    secure: 6+9hzV1Up8Nxx2U/zVJk7TP85IoxlmNw9puov4SjaVaSNKMBNUbEiA4MOQkbiwrh
+    secure: lL1w5Wlk0xkOdYPAYSG2JzQTjVO34MI6xqsNmAUcT6R5OTNRI+hcbJJx5Rqm6gRE
   skip_symbols: true

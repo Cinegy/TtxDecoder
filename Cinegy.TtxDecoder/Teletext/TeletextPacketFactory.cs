@@ -12,7 +12,7 @@ namespace Cinegy.TtxDecoder.Teletext
         {
             var returnedPackets = new List<TeletextPacket>();
             
-            if (pes.PacketStartCodePrefix != Pes.DefaultPacketStartCodePrefix || pes.StreamId != Pes.PrivateStream1 ||
+            if (pes.PacketStartCodePrefix != Pes.DefaultPacketStartCodePrefix || pes.StreamId != (byte)PesStreamTypes.PrivateStream1 ||
                 pes.PesPacketLength <= 0) return null;
 
             ushort startOfTeletextData = 7;

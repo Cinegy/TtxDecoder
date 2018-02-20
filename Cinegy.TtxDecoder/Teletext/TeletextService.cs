@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Cinegy.TsDecoder.TransportStream;
-using Cinegy.TtxDecoder.Metrics;
 
 namespace Cinegy.TtxDecoder.Teletext
 {
@@ -56,7 +55,7 @@ namespace Cinegy.TtxDecoder.Teletext
         /// <summary>
         /// Analysis object, used for collecting cumulative and periodic data about teletext service
         /// </summary>
-        public TeletextMetric Metric { get; set; }
+        //public TeletextMetric Metric { get; set; }
 
         /// <summary>
         /// A Dictionary of Teletext Magazines, which themselves may contain a collection of pages
@@ -65,7 +64,7 @@ namespace Cinegy.TtxDecoder.Teletext
         
         public TeletextService()
         {
-            Metric = new TeletextMetric(this);
+           // Metric = new TeletextMetric(this);
         }
 
         public void AddData(Pes pes, PesHdr tsPacketPesHeader)
@@ -80,7 +79,7 @@ namespace Cinegy.TtxDecoder.Teletext
 
             foreach (var ttxPacket in ttxPackets)
             {
-                Metric.AddPacket(ttxPacket);
+               // Metric.AddPacket(ttxPacket);
                 AddPacketToService(ttxPacket);
             }
 

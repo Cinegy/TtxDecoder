@@ -6,3 +6,4 @@ packages
 /TestResults
 *.suo
 project.lock.json
+/.vs/Cinegy.TtxDecoder/v15/Server/sqlite3

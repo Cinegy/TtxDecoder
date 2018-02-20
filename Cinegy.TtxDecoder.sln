@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2026
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cinegy.TtxDecoder", "Cinegy.TtxDecoder\Cinegy.TtxDecoder.csproj", "{6EBEC7B5-5ECE-46EB-9534-39A3F9BF91A1}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cinegy.TtxDecoder.Tests", "Cinegy.TtxDecoder.Tests\Cinegy.TtxDecoder.Tests.csproj", "{F35A0261-5F85-4598-BDB1-A8A9F5153BA5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cinegy.TtxDecoder", "Cinegy.TtxDecoder\Cinegy.TtxDecoder.csproj", "{5926BFCB-D399-4E8A-8806-5A8FAD0EEB84}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,16 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6EBEC7B5-5ECE-46EB-9534-39A3F9BF91A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6EBEC7B5-5ECE-46EB-9534-39A3F9BF91A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6EBEC7B5-5ECE-46EB-9534-39A3F9BF91A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6EBEC7B5-5ECE-46EB-9534-39A3F9BF91A1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F35A0261-5F85-4598-BDB1-A8A9F5153BA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F35A0261-5F85-4598-BDB1-A8A9F5153BA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F35A0261-5F85-4598-BDB1-A8A9F5153BA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F35A0261-5F85-4598-BDB1-A8A9F5153BA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5926BFCB-D399-4E8A-8806-5A8FAD0EEB84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5926BFCB-D399-4E8A-8806-5A8FAD0EEB84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5926BFCB-D399-4E8A-8806-5A8FAD0EEB84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5926BFCB-D399-4E8A-8806-5A8FAD0EEB84}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E6972BF5-E698-4798-9060-4166CC62A5F6}
 	EndGlobalSection
 EndGlobal
