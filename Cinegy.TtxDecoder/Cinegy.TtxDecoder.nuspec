@@ -11,7 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <releaseNotes>Functional pre-release version of refactored object model for Teletext subtitle decoding</releaseNotes>
-    <copyright>Copyright Cinegy GmbH 2017</copyright>
+    <copyright>Copyright Cinegy GmbH 2018</copyright>
     <tags>Teletext</tags>
   </metadata>
 </package>
