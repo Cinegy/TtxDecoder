@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27130.2026
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cinegy.TtxDecoder", "Cinegy.TtxDecoder\Cinegy.TtxDecoder.csproj", "{5926BFCB-D399-4E8A-8806-5A8FAD0EEB84}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cinegy.TtxDecoder.Tests", "Cinegy.TtxDecoder.Tests\Cinegy.TtxDecoder.Tests.csproj", "{118F1E30-2F53-4703-9674-007F242499AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{5926BFCB-D399-4E8A-8806-5A8FAD0EEB84}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5926BFCB-D399-4E8A-8806-5A8FAD0EEB84}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5926BFCB-D399-4E8A-8806-5A8FAD0EEB84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{118F1E30-2F53-4703-9674-007F242499AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{118F1E30-2F53-4703-9674-007F242499AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{118F1E30-2F53-4703-9674-007F242499AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{118F1E30-2F53-4703-9674-007F242499AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

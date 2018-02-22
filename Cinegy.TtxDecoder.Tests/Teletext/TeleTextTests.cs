@@ -1,36 +1,17 @@
 ﻿using System;
-using System.Reflection;
 using Cinegy.TsDecoder.TransportStream;
 using Cinegy.TtxDecoder.Teletext;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using static System.String;
-using System.Collections.Generic;
+using System.IO;
+using NUnit.Framework;
 
 namespace Cinegy.TtxDecoder.Tests.Teletext
 {
-    [TestClass()]
+    [TestFixture]
     public class TeletextTests
     {
-        private static long _lastPTS = 0;
-
-        [TestMethod()]
-        public void DecodeTeletextDataTest()
-        {
-            var resources = new List<string>
-            {
-                "Cinegy.TtxDecoder.Tests.TestStreams.Teletext-bars-1mbps-20170125-095714.ts",
-                "Cinegy.TtxDecoder.Tests.TestStreams.PID_0x0163.bin"
-            };
-            
-            foreach(var resource in resources)
-            {
-                LoadTestFileCheckText(resource);
-            }
-
-
-        }
-
-        private void LoadTestFileCheckText(string resourceName)
+        [TestCase(@"TestStreams\Teletext-bars-1mbps-20170125-095714.ts")]
+        [TestCase(@"TestStreams\PID_0x0163.bin")]
+        public void DecodeTeletextDataTest(string fileName)
         {
             var tsDecoder = new TsDecoder.TransportStream.TsDecoder();
             var ttxDecoder = new TeletextDecoder();
@@ -41,23 +22,16 @@ namespace Cinegy.TtxDecoder.Tests.Teletext
 
             var lastPts = 0L;
             
-            //load some data from test file
-            var assembly = Assembly.GetExecutingAssembly();
-            
             const int readFragmentSize = 1316;
 
-            //using (var stream = System.IO.File.OpenRead(resourceName))
-
-            using (var stream = assembly.GetManifestResourceStream(resourceName))
+            using (var stream = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, fileName)))
             {
-                if (stream == null) Assert.Fail("Unable to read test resource: " + resourceName);
-
-                Console.WriteLine($"Reading test resource: {resourceName}");
+                Console.WriteLine($"Reading test file: {fileName}");
                 var data = new byte[readFragmentSize];
 
                 var readCount = stream.Read(data, 0, readFragmentSize);
 
-                if (resourceName.EndsWith(".bin"))
+                if (fileName.EndsWith(".bin"))
                 {
                     //resource provided is a stripped BIN without TS tables - override setup with explicit values
                     ttxDecoder.Setup(8, 1, 355);
@@ -96,20 +70,19 @@ namespace Cinegy.TtxDecoder.Tests.Teletext
                 }
             }
 
-            if (ttxDecoder.Service?.Metric == null) return;
+            //if (ttxDecoder.Service?.Metric == null) return;
 
-            Console.WriteLine($"Finsihed - Total TTX Packets: {ttxDecoder.Service.Metric.TtxPacketCount}");
+            //Console.WriteLine($"Finished - Total TTX Packets: {ttxDecoder.Service.Metric.TtxPacketCount}");
             
-            foreach (var teletextMetricPagePacketCount in ttxDecoder.Service?.Metric.PagePacketCounts)
-            {
-                Console.WriteLine($"Magazine: {teletextMetricPagePacketCount.Key}, Count: {teletextMetricPagePacketCount.Value}");
-            }
+            //foreach (var teletextMetricPagePacketCount in ttxDecoder.Service?.Metric.PagePacketCounts)
+            //{
+              //  Console.WriteLine($"Magazine: {teletextMetricPagePacketCount.Key}, Count: {teletextMetricPagePacketCount.Value}");
+           // }
         }
 
-        private void Service_TeletextPageCleared(object sender, EventArgs e)
+        private static void Service_TeletextPageCleared(object sender, EventArgs e)
         {
-            var ttxEventArgs = e as TeletextPageClearedEventArgs;
-            if (ttxEventArgs == null) return;
+            if (!(e is TeletextPageClearedEventArgs ttxEventArgs)) return;
 
             var timeStamp = new TimeSpan(0, 0, 0, 0, (int)(ttxEventArgs.Pts / 90));
             
@@ -117,17 +90,15 @@ namespace Cinegy.TtxDecoder.Tests.Teletext
             
         }
 
-        private void ServiceTeletextPageReady(object sender, EventArgs e)
+        private static void ServiceTeletextPageReady(object sender, EventArgs e)
         {
-            var ttxEventArgs = e as TeletextPageReadyEventArgs;
-
-            if(ttxEventArgs==null) return;
+            if(!(e is TeletextPageReadyEventArgs ttxEventArgs)) return;
 
             var timeStamp = new TimeSpan(0, 0, 0, 0, (int)(ttxEventArgs.Page.Pts / 90));
 
             foreach (var row in ttxEventArgs.Page.Rows)
             {
-                if(row.IsChanged() && !IsNullOrWhiteSpace(row.GetPlainRow()))    
+                if(row.IsChanged() && !string.IsNullOrWhiteSpace(row.GetPlainRow()))    
                     Console.WriteLine($"{timeStamp:hh\\:mm\\:ss\\.ff} [{ttxEventArgs.Page.PageNum}] ({row.RowNum}): {row.GetPlainRow()}");
             }
         }

@@ -5,18 +5,18 @@
     <Version>2.0.0-beta</Version>
     <Authors>Lewis Kirkaldie</Authors>
     <Company>Cinegy GmbH</Company>
-    <Description>A teletext subtitle decoder, in C# using NET Framework 4.6.1 and NET Standard 2.0</Description>
+    <Description>A teletext subtitle decoder, in C# targetting NET Framework 4.6.1 and NET Core 2.0</Description>
     <Copyright>Cinegy GmbH</Copyright>
     <PackageTags>Transport Stream Teletext Subtitle MPEGTS</PackageTags>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/Cinegy/TtxDecoder</PackageProjectUrl>
-    <PackageReleaseNotes>Now with multiple builds targetting NET Framework and NET Standard 2.0</PackageReleaseNotes>
+    <PackageReleaseNotes>Now with multiple builds targetting NET Framework and NET Core 2.0</PackageReleaseNotes>
     <NeutralLanguage />
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cinegy.TsDecoder" Version="3.0.0-beta" />
+    <PackageReference Include="Cinegy.TsDecoder" Version="3.0.101-beta" />
   </ItemGroup>
 
 </Project>
