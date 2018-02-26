@@ -76,7 +76,6 @@ namespace Cinegy.TtxDecoder.Teletext
             }
 
         }
-        
 
         private void AddPacketToService(TeletextPacket packet)
         {
@@ -101,11 +100,11 @@ namespace Cinegy.TtxDecoder.Teletext
             Magazines[packet.Magazine].AddPacket(packet);
         }
 
-        public event EventHandler TeletextPageReady;
+        public event TeletextPageReadyEventHandler TeletextPageReady;
 
-        public event EventHandler TeletextPageCleared;
+        public event TeletextPageClearedEventHandler TeletextPageCleared;
 
-        public event EventHandler TeletextPacketsReady;
+        public event TeletextPacketsReadyEventHandler TeletextPacketsReady;
 
         internal virtual void OnTeletextPageReady(TeletextPage page)
         {
@@ -121,7 +120,12 @@ namespace Cinegy.TtxDecoder.Teletext
         {
             TeletextPacketsReady?.Invoke(this, new TeletextPacketsReadyEventArgs(packets));
         }
-
-
+        
     }
+
+    public delegate void TeletextPacketsReadyEventHandler(object sender, TeletextPacketsReadyEventArgs args);
+
+    public delegate void TeletextPageClearedEventHandler(object sender, TeletextPageClearedEventArgs args);
+
+    public delegate void TeletextPageReadyEventHandler(object sender, TeletextPageReadyEventArgs args);
 }
