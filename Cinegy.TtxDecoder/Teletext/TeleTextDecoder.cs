@@ -21,11 +21,11 @@ namespace Cinegy.TtxDecoder.Teletext
 {
     public class TeletextDecoder
     {
-        private TeletextDescriptor _currentTeletextDescriptor;
         private Pes _currentTeletextPes;
-
-
+        
         public TeletextService Service { get; set; } = new TeletextService();
+
+        public TeletextDescriptor CurrentTeletextDescriptor { get; private set; }
 
         /// <summary>
         /// The Program Number of the service that is used as source for teletext data - can be set by constructor only, otherwise default program will be used.
@@ -74,19 +74,15 @@ namespace Cinegy.TtxDecoder.Teletext
 
         private void Setup(TsDecoder.TransportStream.TsDecoder tsDecoder)
         {
-            EsInfo esStreamInfo;
-            TeletextDescriptor ttxDesc;
-
-            if (FindTeletextService(tsDecoder, out esStreamInfo, out ttxDesc))
+            if (FindTeletextService(tsDecoder, out var esStreamInfo, out var ttxDesc))
             {
                 Setup(ttxDesc, esStreamInfo.ElementaryPid);
             }
-
         }
 
         public void Setup(TeletextDescriptor teletextDescriptor, short teletextPid)
         {
-            _currentTeletextDescriptor = teletextDescriptor;
+            CurrentTeletextDescriptor = teletextDescriptor;
 
             var defaultLang = teletextDescriptor.Languages.FirstOrDefault();
 
@@ -112,7 +108,7 @@ namespace Cinegy.TtxDecoder.Teletext
 
         public void AddPacket(TsPacket tsPacket, TsDecoder.TransportStream.TsDecoder tsDecoder = null)
         {
-            if ((Service == null) || (Service.TeletextPid == -1))
+            if (Service == null || Service.TeletextPid == -1)
             {
                 Setup(tsDecoder);
             }

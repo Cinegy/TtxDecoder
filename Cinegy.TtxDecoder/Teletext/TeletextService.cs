@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Cinegy.TsDecoder.TransportStream;
 
 namespace Cinegy.TtxDecoder.Teletext
@@ -53,37 +54,29 @@ namespace Cinegy.TtxDecoder.Teletext
         public bool SubtitleFilter { get; set; }
 
         /// <summary>
-        /// Analysis object, used for collecting cumulative and periodic data about teletext service
-        /// </summary>
-        //public TeletextMetric Metric { get; set; }
-
-        /// <summary>
         /// A Dictionary of Teletext Magazines, which themselves may contain a collection of pages
         /// </summary>
         public Dictionary<int, TeletextMagazine> Magazines { get; set; } = new Dictionary<int, TeletextMagazine>(9);
         
-        public TeletextService()
-        {
-           // Metric = new TeletextMetric(this);
-        }
-
         public void AddData(Pes pes, PesHdr tsPacketPesHeader)
         {
             //update / store any reference PTS for displaying easy relative values
             if (ReferencePts == 0) ReferencePts = tsPacketPesHeader.Pts;
-            if ((ReferencePts > 0) && (tsPacketPesHeader.Pts < ReferencePts)) ReferencePts = tsPacketPesHeader.Pts;
+            if (ReferencePts > 0 && tsPacketPesHeader.Pts < ReferencePts) ReferencePts = tsPacketPesHeader.Pts;
 
             var ttxPackets = TeletextPacketFactory.GetTtxPacketsFromData(pes, tsPacketPesHeader);
 
             if (ttxPackets == null) return;
 
+            OnTeletextPacketsReady(ttxPackets);
+
             foreach (var ttxPacket in ttxPackets)
             {
-               // Metric.AddPacket(ttxPacket);
                 AddPacketToService(ttxPacket);
             }
 
         }
+        
 
         private void AddPacketToService(TeletextPacket packet)
         {
@@ -112,6 +105,8 @@ namespace Cinegy.TtxDecoder.Teletext
 
         public event EventHandler TeletextPageCleared;
 
+        public event EventHandler TeletextPacketsReady;
+
         internal virtual void OnTeletextPageReady(TeletextPage page)
         {
             TeletextPageReady?.Invoke(this, new TeletextPageReadyEventArgs(page));
@@ -121,6 +116,12 @@ namespace Cinegy.TtxDecoder.Teletext
         {
             TeletextPageCleared?.Invoke(this, new TeletextPageClearedEventArgs(pageNumber, pts));
         }
+
+        internal virtual void OnTeletextPacketsReady(List<TeletextPacket> packets)
+        {
+            TeletextPacketsReady?.Invoke(this, new TeletextPacketsReadyEventArgs(packets));
+        }
+
 
     }
 }

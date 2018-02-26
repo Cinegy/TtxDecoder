@@ -10,7 +10,7 @@
     <PackageTags>Transport Stream Teletext Subtitle MPEGTS</PackageTags>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/Cinegy/TtxDecoder</PackageProjectUrl>
-    <PackageReleaseNotes>Now with multiple builds targetting NET Framework and NET Core 2.0</PackageReleaseNotes>
+    <PackageReleaseNotes>Updated to return teletextpackets via event (completing refactor for metrics processing external to this library)</PackageReleaseNotes>
     <NeutralLanguage />
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
