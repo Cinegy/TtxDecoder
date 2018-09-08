@@ -1,22 +1,22 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <Version>2.0.0-beta</Version>
     <Authors>Lewis Kirkaldie</Authors>
     <Company>Cinegy GmbH</Company>
-    <Description>A teletext subtitle decoder, in C# targetting NET Framework 4.6.1 and NET Core 2.0</Description>
+    <Description>A teletext subtitle decoder, in C# targetting NET standard 2.0</Description>
     <Copyright>Cinegy GmbH</Copyright>
     <PackageTags>Transport Stream Teletext Subtitle MPEGTS</PackageTags>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/Cinegy/TtxDecoder</PackageProjectUrl>
-    <PackageReleaseNotes>Updated to return teletextpackets via event (completing refactor for metrics processing external to this library)</PackageReleaseNotes>
+    <PackageReleaseNotes>Moved to netstandard 2.0</PackageReleaseNotes>
     <NeutralLanguage />
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cinegy.TsDecoder" Version="3.0.101-beta" />
+    <PackageReference Include="Cinegy.TsDecoder" Version="3.0.113-beta" />
   </ItemGroup>
 
 </Project>
