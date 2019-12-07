@@ -22,6 +22,7 @@ namespace Cinegy.TtxDecoder.Teletext
     public class TeletextDecoder
     {
         private Pes _currentTeletextPes;
+        public long LastPts { get; private set; }
         
         public TeletextService Service { get; set; } = new TeletextService();
 
@@ -117,6 +118,9 @@ namespace Cinegy.TtxDecoder.Teletext
             
             if (tsPacket.PayloadUnitStartIndicator)
             {
+                if (tsPacket.PesHeader.Pts > -1)
+                    LastPts = tsPacket.PesHeader.Pts;
+
                 if (_currentTeletextPes == null)
                 {
                     _currentTeletextPes = new Pes(tsPacket);
