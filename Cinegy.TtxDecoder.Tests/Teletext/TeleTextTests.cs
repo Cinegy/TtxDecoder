@@ -11,7 +11,7 @@ namespace Cinegy.TtxDecoder.Tests.Teletext
     {
         [TestCase(@"TestStreams\Teletext-bars-1mbps-20170125-095714.ts")]
         [TestCase(@"TestStreams\PID_0x0163.bin")]
-        public void DecodeTeletextDataTest(string fileName)
+        public void DecodeTsPidTeletextDataTest(string fileName)
         {
             var tsDecoder = new TsDecoder.TransportStream.TsDecoder();
             var ttxDecoder = new TeletextDecoder();
@@ -78,6 +78,61 @@ namespace Cinegy.TtxDecoder.Tests.Teletext
             //{
               //  Console.WriteLine($"Magazine: {teletextMetricPagePacketCount.Key}, Count: {teletextMetricPagePacketCount.Value}");
            // }
+        }
+
+        [TestCase(@"TestStreams\ttx.bin")]
+        public void DecodeRawTeletextDataTest(string fileName)
+        {
+            var ttxDecoder = new TeletextDecoder();
+            
+            ttxDecoder.Service.TeletextPageReady += ServiceTeletextPageReady;
+            ttxDecoder.Service.TeletextPageCleared += Service_TeletextPageCleared;
+
+            var lastPts = 0L;
+
+            const int readFragmentSize = 139;
+
+            using (var stream = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, fileName)))
+            {
+                Console.WriteLine($"Reading test file: {fileName}");
+                var data = new byte[readFragmentSize];
+
+                var readCount = stream.Read(data, 0, readFragmentSize);
+
+                if (fileName.EndsWith(".bin"))
+                {
+                    //resource provided is a stripped BIN without TS tables - override setup with explicit values
+                    ttxDecoder.Setup(8, 1, 355);
+                }
+
+                
+                while (readCount > 0)
+                {
+                    var packets = TeletextPacketFactory.GetTtxPacketsFromRawData(data);
+                    foreach (var teletextPacket in packets)
+                    {
+                        ttxDecoder.Service.AddPacketToService(teletextPacket);
+                    }
+                    
+                    if (stream.Position < stream.Length)
+                    {
+                        readCount = stream.Read(data, 0, readFragmentSize);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+
+            //if (ttxDecoder.Service?.Metric == null) return;
+
+            //Console.WriteLine($"Finished - Total TTX Packets: {ttxDecoder.Service.Metric.TtxPacketCount}");
+
+            //foreach (var teletextMetricPagePacketCount in ttxDecoder.Service?.Metric.PagePacketCounts)
+            //{
+            //  Console.WriteLine($"Magazine: {teletextMetricPagePacketCount.Key}, Count: {teletextMetricPagePacketCount.Value}");
+            // }
         }
 
         private static void Service_TeletextPageCleared(object sender, EventArgs e)

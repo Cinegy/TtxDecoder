@@ -40,5 +40,31 @@ namespace Cinegy.TtxDecoder.Teletext
             
             return returnedPackets;
         }
+
+
+        public static List<TeletextPacket> GetTtxPacketsFromRawData(byte[] data)
+        {
+            var returnedPackets = new List<TeletextPacket>();
+            
+            var startOfTeletextData = 1;
+
+            while (startOfTeletextData < data.Length)
+            {
+                var ttxPacket = new TeletextPacket(data[startOfTeletextData], data[startOfTeletextData + 1], -1);
+
+                if (ttxPacket.DataUnitLength == SizeOfTeletextPayload)
+                {
+                    var bodyData = new byte[ttxPacket.DataUnitLength + 2];
+                    Buffer.BlockCopy(data, startOfTeletextData, data, 0, ttxPacket.DataUnitLength + 2);
+                    ttxPacket.Data = data;
+                }
+
+                returnedPackets.Add(ttxPacket.Row == 0 ? new TeletextHeaderPacket(ttxPacket) : ttxPacket);
+
+                startOfTeletextData += (ushort)(ttxPacket.DataUnitLength + 2);
+            }
+
+            return returnedPackets;
+        }
     }
 }

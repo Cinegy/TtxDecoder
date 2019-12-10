@@ -77,7 +77,7 @@ namespace Cinegy.TtxDecoder.Teletext
 
         }
 
-        private void AddPacketToService(TeletextPacket packet)
+        public void AddPacketToService(TeletextPacket packet)
         {
             if (packet.Row == 30)
             {
