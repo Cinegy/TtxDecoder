@@ -55,8 +55,8 @@ namespace Cinegy.TtxDecoder.Teletext
                 if (ttxPacket.DataUnitLength == SizeOfTeletextPayload)
                 {
                     var bodyData = new byte[ttxPacket.DataUnitLength + 2];
-                    Buffer.BlockCopy(data, startOfTeletextData, data, 0, ttxPacket.DataUnitLength + 2);
-                    ttxPacket.Data = data;
+                    Buffer.BlockCopy(data, startOfTeletextData, bodyData, 0, ttxPacket.DataUnitLength + 2);
+                    ttxPacket.Data = bodyData;
                 }
 
                 returnedPackets.Add(ttxPacket.Row == 0 ? new TeletextHeaderPacket(ttxPacket) : ttxPacket);
