@@ -16,7 +16,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cinegy.TsDecoder" Version="3.0.123" />
+    <PackageReference Include="Cinegy.TsDecoder" Version="3.0.125" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+    <ProjectReference Include="..\..\TsDecoder\Cinegy.TsDecoder\Cinegy.TsDecoder.csproj" />
   </ItemGroup>
 
 </Project>
