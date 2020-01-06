@@ -85,8 +85,8 @@ namespace Cinegy.TtxDecoder.Tests.Teletext
         {
             var ttxDecoder = new TeletextDecoder();
             
-            ttxDecoder.Service.TeletextPageReady += ServiceTeletextPageReady;
-            ttxDecoder.Service.TeletextPageCleared += Service_TeletextPageCleared;
+            //ttxDecoder.Service.TeletextPageReady += ServiceTeletextPageReady;
+            //ttxDecoder.Service.TeletextPageCleared += Service_TeletextPageCleared;
 
             var lastPts = 0L;
 
@@ -109,9 +109,23 @@ namespace Cinegy.TtxDecoder.Tests.Teletext
                 while (readCount > 0)
                 {
                     var packets = TeletextPacketFactory.GetTtxPacketsFromRawData(data);
+                    //Console.WriteLine($"Got {packets.Count} Teletext Packets");
                     foreach (var teletextPacket in packets)
                     {
                         ttxDecoder.Service.AddPacketToService(teletextPacket);
+                        if (teletextPacket.DataUnitId == TeletextPacket.DataUnitStuffing)
+                        {
+                            Console.Write(".");
+                        }
+                        else if (teletextPacket is TeletextHeaderPacket header)
+                        {
+                            Console.Write($"H{header.Magazine}:{header.Page}");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"\n{teletextPacket.DataUnitId}");
+                        }
+                        
                     }
                     
                     if (stream.Position < stream.Length)
