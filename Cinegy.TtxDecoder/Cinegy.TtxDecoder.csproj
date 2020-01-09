@@ -16,7 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cinegy.TsDecoder" Version="3.0.125" />
+    <PackageReference Include="Cinegy.TsDecoder" Version="3.0.126" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
